@@ -1,0 +1,110 @@
+---
+import { sanitizeHref } from "emdash";
+import Base from "../layouts/Base.astro";
+
+interface Props {
+	locale: "th" | "en";
+}
+
+const { locale } = Astro.props;
+const th = locale === "th";
+const rawEmail = import.meta.env.PUBLIC_CONTACT_EMAIL?.trim();
+const rawLineUrl = import.meta.env.PUBLIC_CONTACT_LINE_URL?.trim();
+const rawPhone = import.meta.env.PUBLIC_CONTACT_PHONE?.trim();
+const email = rawEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail) ? rawEmail : undefined;
+const lineUrl = rawLineUrl && /^https?:\/\//i.test(rawLineUrl) ? sanitizeHref(rawLineUrl) : undefined;
+const phone = rawPhone && /^[+\d\s().-]{6,24}$/.test(rawPhone) ? rawPhone : undefined;
+const methods = [
+	...(email ? [{ label: th ? "อีเมล" : "Email", value: email, href: sanitizeHref("mailto:" + email), code: "01" }] : []),
+	...(lineUrl ? [{ label: "LINE", value: th ? "เปิด LINE เพื่อพูดคุย" : "Open LINE to chat", href: lineUrl, code: "02" }] : []),
+	...(phone ? [{ label: th ? "โทรศัพท์" : "Phone", value: phone, href: sanitizeHref("tel:" + phone.replace(/[^+\d]/g, "")), code: "03" }] : []),
+];
+const title = th ? "ติดต่อ Burumu" : "Contact Burumu";
+const description = th
+	? "ติดต่อ Burumu เพื่อพูดคุยเรื่อง Odoo, การตลาด, คอนเทนต์ หรือการพัฒนาเกม"
+	: "Contact Burumu to discuss Odoo, marketing, content, or game development.";
+---
+
+<Base title={title} description={description} locale={locale} localePath="/contact">
+	<section class="contact-page">
+		<div class="contact-heading">
+			<p class="contact-eyebrow">{th ? "เริ่มต้นบทสนทนา" : "START A CONVERSATION"}</p>
+			<h1>{th ? "เล่าโจทย์ของคุณให้เราฟัง" : "Tell us what you are working on."}</h1>
+			<p class="contact-intro">
+				{th
+					? "ติดต่อ Burumu เพื่อพูดคุยเรื่องติดตั้งหรือย้ายระบบ Odoo การวิเคราะห์การตลาด งานกราฟิกและคอนเทนต์ หรือการพัฒนาเกม"
+					: "Get in touch with Burumu about Odoo installation or migration, marketing analysis, graphic and content work, or game development."}
+			</p>
+		</div>
+
+		{methods.length > 0 ? (
+			<div class="contact-options" aria-label={th ? "ช่องทางติดต่อ" : "Contact options"}>
+				{methods.map((method) => (
+					<a class="contact-option" href={method.href} target={method.label === "LINE" ? "_blank" : undefined} rel={method.label === "LINE" ? "noopener noreferrer" : undefined}>
+						<span class="option-code">{method.code}</span>
+						<span class="option-content">
+							<span class="option-label">{method.label}</span>
+							<span class="option-value">{method.value}</span>
+						</span>
+						<span class="option-arrow" aria-hidden="true">↗</span>
+					</a>
+				))}
+			</div>
+		) : (
+			<div class="contact-unavailable">
+				<span class="option-code">—</span>
+				<div>
+					<h2>{th ? "ช่องทางติดต่อกำลังเตรียม" : "Contact details are being prepared"}</h2>
+					<p>{th ? "ทีม Burumu ยังไม่ได้เพิ่มช่องทางติดต่อ กรุณากลับมาตรวจสอบอีกครั้ง" : "Burumu has not added an enquiry channel yet. Please check back soon."}</p>
+					{Astro.locals.user && <a href="/_emdash/admin">Open EmDash admin</a>}
+				</div>
+			</div>
+		)}
+
+		<p class="contact-note">
+			{th
+				? "เพื่อให้เริ่มคุยได้เร็วขึ้น ระบุบริการที่สนใจและรายละเอียดโปรเจกต์สั้น ๆ ในข้อความ"
+				: "To make the first conversation useful, include the service you are interested in and a short project brief."}
+		</p>
+	</section>
+</Base>
+
+<style>
+	.contact-page { width: min(100% - 3rem, 960px); min-height: 50vh; margin: 0 auto; padding: 6rem 0 1rem; }
+	.contact-heading { max-width: 48rem; }
+	.contact-eyebrow { margin-bottom: 1rem; color: var(--color-brand); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.14em; }
+	.contact-heading h1 { max-width: 13ch; margin-bottom: 1.2rem; font-size: clamp(2.7rem, 7vw, 5.2rem); font-weight: 850; letter-spacing: -0.075em; line-height: 1.06; }
+	.contact-intro { max-width: 42rem; margin-bottom: 2.8rem; color: var(--color-muted); font-size: 1.05rem; line-height: 1.85; }
+	.contact-options { border-top: 1px solid var(--color-border); }
+	.contact-option {
+		display: grid;
+		grid-template-columns: 3.5rem 1fr auto;
+		align-items: center;
+		gap: 1.2rem;
+		padding: 1.35rem 0;
+		border-bottom: 1px solid var(--color-border);
+	}
+	.option-code { color: var(--color-brand); font-size: 0.74rem; font-weight: 800; }
+	.option-content { display: grid; gap: 0.2rem; }
+	.option-label { font-size: 0.83rem; font-weight: 700; }
+	.option-value { color: var(--color-muted); font-size: 1.05rem; overflow-wrap: anywhere; }
+	.option-arrow { color: var(--color-brand); font-size: 1.2rem; }
+	.contact-option:hover .option-value { color: var(--color-text); }
+	.contact-unavailable {
+		display: grid;
+		grid-template-columns: 3.5rem 1fr;
+		gap: 1.2rem;
+		padding: 1.4rem 0;
+		border-top: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+	}
+	.contact-unavailable h2 { margin-bottom: 0.5rem; font-size: 1.25rem; }
+	.contact-unavailable p { margin: 0; color: var(--color-muted); }
+	.contact-unavailable a { display: inline-block; margin-top: 1rem; color: var(--color-brand-hover); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+	.contact-note { max-width: 42rem; margin-top: 1.5rem; color: var(--color-muted); font-size: 0.88rem; }
+	@media (max-width: 600px) {
+		.contact-page { width: min(100% - 2rem, 960px); padding-top: 4.3rem; }
+		.contact-option, .contact-unavailable { grid-template-columns: 2rem 1fr auto; gap: 0.8rem; }
+		.contact-unavailable { grid-template-columns: 2rem 1fr; }
+	}
+</style>

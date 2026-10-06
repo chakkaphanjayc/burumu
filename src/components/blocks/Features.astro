@@ -1,0 +1,79 @@
+---
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+
+type FeaturesBlock = Extract<PageContentBlock, { _type: "marketing_features" }>;
+type Props = BlockComponentProps<FeaturesBlock>;
+
+const { value } = Astro.props;
+---
+
+<section class="services section" id={value.anchor_id || "services"}>
+	<div class="container">
+		<header class="section-heading">
+			<div>
+				{value.eyebrow && <p class="section-eyebrow">{value.eyebrow}</p>}
+				<h2 class="section-title">{value.headline}</h2>
+			</div>
+			{value.subheadline && <p class="section-intro">{value.subheadline}</p>}
+		</header>
+		<div class="services-grid">
+			{value.features.map((feature) => (
+				<article class="service-card">
+					<div class="service-topline">
+						<span class="service-number">{feature.number}</span>
+						<span class="service-kind">{feature.label}</span>
+					</div>
+					<h3>{feature.title}</h3>
+					<p>{feature.description}</p>
+					<span class="service-arrow" aria-hidden="true">↗</span>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.section { padding-block: 6rem; }
+	.section-heading {
+		display: grid;
+		grid-template-columns: 1fr minmax(15rem, 0.62fr);
+		align-items: end;
+		gap: 2rem;
+		margin-bottom: 2.3rem;
+	}
+	.section-eyebrow { margin-bottom: 0.7rem; color: var(--color-brand); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
+	.section-title { max-width: 14ch; margin-bottom: 0; font-size: clamp(2.3rem, 4vw, 3.7rem); font-weight: 820; letter-spacing: -0.07em; }
+	.section-intro { max-width: 31rem; margin: 0 0 0.25rem; color: var(--color-muted); line-height: 1.8; }
+	.services-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--color-border); border-left: 1px solid var(--color-border); }
+	.service-card {
+		position: relative;
+		min-height: 19rem;
+		padding: 1.4rem 1.35rem 3.2rem;
+		border-right: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+		background: rgba(255, 255, 255, 0.26);
+		transition: background-color 180ms ease, transform 180ms ease;
+	}
+	.service-card:hover { z-index: 1; transform: translateY(-3px); background: #fffdfa; }
+	.service-topline { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 2.7rem; }
+	.service-number { color: var(--color-brand); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; }
+	.service-kind { color: var(--color-muted); font-size: 0.62rem; font-weight: 750; letter-spacing: 0.1em; text-align: right; text-transform: uppercase; }
+	.service-card h3 { max-width: 15ch; margin-bottom: 0.75rem; font-size: 1.27rem; font-weight: 780; letter-spacing: -0.04em; }
+	.service-card p { margin-bottom: 0; color: var(--color-muted); font-size: 0.88rem; line-height: 1.8; }
+	.service-arrow { position: absolute; right: 1.35rem; bottom: 1.15rem; color: var(--color-brand); font-size: 1.15rem; }
+	@media (max-width: 1000px) {
+		.services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+		.service-card { min-height: 17rem; }
+	}
+	@media (max-width: 700px) {
+		.section { padding-block: 4.2rem; }
+		.section-heading { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.7rem; }
+		.section-title { max-width: 16ch; }
+	}
+	@media (max-width: 520px) {
+		.services-grid { grid-template-columns: 1fr; }
+		.service-card { min-height: 15.2rem; padding: 1.2rem 1.1rem 3rem; }
+		.service-topline { margin-bottom: 1.7rem; }
+	}
+</style>

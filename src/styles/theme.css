@@ -1,0 +1,29 @@
+:root {
+	color-scheme: light;
+	--font-body: "Noto Sans Thai", "Leelawadee UI", Tahoma, system-ui, sans-serif;
+	--font-heading: "Noto Sans Thai", "Leelawadee UI", Tahoma, system-ui, sans-serif;
+	--color-bg: #f6f3ed;
+	--color-text: #24251f;
+	--color-muted: #686a61;
+	--color-border: #deddd4;
+	--color-border-strong: #b8b8ae;
+	--color-surface: #fffdfa;
+	--color-brand: #df5730;
+	--color-brand-hover: #bd4022;
+	--color-brand-strong: #bd4022;
+	--color-brand-soft: #f3a18a;
+	--color-accent: #e0b747;
+	--color-accent-soft: #f2daa0;
+	--color-on-brand: #fff;
+	--color-focus: #245db2;
+	--color-brand-ring: rgba(223, 87, 48, 0.24);
+	--gradient-brand: #df5730;
+	--gradient-brand-strong: #bd4022;
+	--gradient-brand-soft: #f3a18a;
+	--gradient-headline: #24251f;
+	--font-weight-heading: 750;
+	--font-weight-display: 850;
+	--wide-width: 1160px;
+	--radius: 0.55rem;
+	--radius-lg: 0.8rem;
+}

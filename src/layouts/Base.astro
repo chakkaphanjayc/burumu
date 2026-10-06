@@ -1,0 +1,283 @@
+---
+import { getSiteSettingsWithCacheHint } from "emdash";
+import { EmDashBodyEnd, EmDashBodyStart, EmDashHead } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import "../styles/tokens.css";
+import "../styles/theme.css";
+
+interface Props {
+	title?: string;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	robots?: string | null;
+	locale?: "th" | "en";
+	localePath?: string;
+	alternates?: boolean;
+	content?: { collection: string; id: string; slug?: string | null };
+}
+
+const { title, description, image, canonical, robots, content, alternates = true } = Astro.props;
+const locale = Astro.props.locale === "en" || Astro.currentLocale === "en" ? "en" : "th";
+const copy = locale === "th"
+	? {
+			home: "หน้าแรก",
+			services: "บริการ",
+			contact: "ติดต่อ",
+			contactCta: "คุยเรื่องโปรเจกต์",
+			language: "EN",
+			languageLabel: "Switch language to English",
+			footerIntro: "ระบบธุรกิจ การตลาด คอนเทนต์ และเกม",
+			footerNav: "สำรวจ",
+			copyright: "สงวนลิขสิทธิ์",
+		}
+	: {
+			home: "Home",
+			services: "Services",
+			contact: "Contact",
+			contactCta: "Discuss a project",
+			language: "TH",
+			languageLabel: "เปลี่ยนภาษาเป็นภาษาไทย",
+			footerIntro: "Business systems, marketing, content, and games",
+			footerNav: "Explore",
+			copyright: "All rights reserved",
+		};
+const prefix = locale === "en" ? "/en" : "";
+const localePath = Astro.props.localePath ?? (Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/");
+const thaiUrl = Astro.url.origin + localePath;
+const englishUrl = Astro.url.origin + "/en" + (localePath === "/" ? "/" : localePath);
+const siteName = "Burumu";
+const settingsResult = await getSiteSettingsWithCacheHint();
+if (Astro.cache?.enabled) Astro.cache.set(settingsResult.cacheHint);
+const settings = settingsResult.data;
+const siteTitle = settings?.title || siteName;
+const siteDescription = description || settings?.tagline || copy.footerIntro;
+const fullTitle = title ? title + " — " + siteTitle : siteTitle;
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: "website",
+	title: fullTitle,
+	pageTitle: title || siteTitle,
+	description: siteDescription,
+	canonical: canonical ?? Astro.url.origin + Astro.url.pathname,
+	image,
+	content,
+	seo: { ogImage: image, robots },
+	siteName,
+});
+const isLoggedIn = !!Astro.locals.user;
+---
+
+<!doctype html>
+<html lang={locale}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#f6f3ed" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={siteDescription} />
+		{alternates && <link rel="alternate" hreflang="th" href={thaiUrl} />}
+		{alternates && <link rel="alternate" hreflang="en" href={englishUrl} />}
+		{alternates && <link rel="alternate" hreflang="x-default" href={thaiUrl} />}
+		<EmDashHead page={pageCtx} />
+	</head>
+	<body>
+		<a class="skip-link" href="#main-content">{locale === "th" ? "ข้ามไปยังเนื้อหา" : "Skip to content"}</a>
+		<EmDashBodyStart page={pageCtx} />
+		<header class="site-header">
+			<nav class="nav" aria-label={locale === "th" ? "เมนูหลัก" : "Main navigation"}>
+				<a href={prefix + "/"} class="site-logo" aria-label={"Burumu — " + copy.home}>
+					<span class="brand-mark" aria-hidden="true">B</span>
+					<span class="brand-name">burumu<span class="brand-period">.</span></span>
+				</a>
+				<div class="nav-links">
+					<a href={prefix + "/#services"}>{copy.services}</a>
+					<a href={prefix + "/contact"}>{copy.contact}</a>
+				</div>
+				<div class="nav-actions">
+					<a
+						class="language-switch"
+						href={locale === "th" ? englishUrl.replace(Astro.url.origin, "") : thaiUrl.replace(Astro.url.origin, "")}
+						lang={locale === "th" ? "en" : "th"}
+						aria-label={copy.languageLabel}
+					>{copy.language}</a>
+					{isLoggedIn && <a href="/_emdash/admin" class="nav-admin">Admin</a>}
+					<a href={prefix + "/contact"} class="btn btn-primary nav-cta">{copy.contactCta}<span aria-hidden="true">↗</span></a>
+				</div>
+			</nav>
+		</header>
+
+		<main id="main-content">
+			<slot />
+		</main>
+
+		<footer class="site-footer">
+			<div class="footer-content">
+				<div class="footer-brand">
+					<a href={prefix + "/"} class="footer-logo" aria-label={"Burumu — " + copy.home}>
+						<span class="brand-mark" aria-hidden="true">B</span>
+						<span class="brand-name">burumu<span class="brand-period">.</span></span>
+					</a>
+					<p>{copy.footerIntro}</p>
+				</div>
+				<div class="footer-column">
+					<h2>{copy.footerNav}</h2>
+					<a href={prefix + "/#services"}>{copy.services}</a>
+					<a href={prefix + "/contact"}>{copy.contact}</a>
+					<a href={locale === "th" ? englishUrl.replace(Astro.url.origin, "") : thaiUrl.replace(Astro.url.origin, "")} lang={locale === "th" ? "en" : "th"}>
+						{copy.language}
+					</a>
+				</div>
+				<div class="footer-bottom">
+					<p>© {new Date().getFullYear()} Burumu. {copy.copyright}</p>
+					<a href="https://emdashcms.com/" target="_blank" rel="noopener noreferrer">EmDash CMS</a>
+				</div>
+			</div>
+		</footer>
+		<EmDashBodyEnd page={pageCtx} />
+	</body>
+</html>
+
+<style is:global>
+	@layer base;
+
+	@layer base {
+		*, *::before, *::after { box-sizing: border-box; }
+		html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+		body {
+			margin: 0;
+			min-width: 320px;
+			min-height: 100vh;
+			color: var(--color-text);
+			background: var(--color-bg);
+			font-family: var(--font-body);
+			font-size: 1rem;
+			line-height: 1.65;
+			-webkit-font-smoothing: antialiased;
+		}
+		a { color: inherit; text-decoration: none; }
+		img, svg { display: block; max-width: 100%; }
+		button, input, textarea, select { font: inherit; }
+		:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+		::selection { color: #fff; background: var(--color-brand); }
+		h1, h2, h3, p { margin-top: 0; }
+		h1, h2, h3 { line-height: 1.18; letter-spacing: -0.035em; }
+		.container { width: min(100% - 3rem, 1160px); margin-inline: auto; }
+		.skip-link {
+			position: fixed;
+			z-index: 999;
+			top: 0.75rem;
+			left: 0.75rem;
+			padding: 0.7rem 1rem;
+			transform: translateY(-160%);
+			color: #fff;
+			background: #161713;
+			border-radius: 0.4rem;
+		}
+		.skip-link:focus { transform: translateY(0); }
+		.btn {
+			display: inline-flex;
+			min-height: 3rem;
+			align-items: center;
+			justify-content: center;
+			gap: 0.7rem;
+			padding: 0.72rem 1.1rem;
+			border: 1px solid transparent;
+			border-radius: 0.55rem;
+			font-weight: 700;
+			line-height: 1.2;
+			transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+		}
+		.btn:hover { transform: translateY(-2px); }
+		.btn-primary { color: #fff; background: var(--color-brand); }
+		.btn-primary:hover { background: var(--color-brand-hover); }
+		.btn-secondary { color: var(--color-text); background: transparent; border-color: var(--color-border-strong); }
+		.btn-secondary:hover { background: #fff; border-color: var(--color-text); }
+		@media (prefers-reduced-motion: reduce) {
+			html { scroll-behavior: auto; }
+			*, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+		}
+	}
+
+	.site-header {
+		position: sticky;
+		z-index: 20;
+		top: 0;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+		background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+		backdrop-filter: blur(16px);
+	}
+	.nav {
+		display: flex;
+		width: min(100% - 3rem, 1220px);
+		min-height: 5.2rem;
+		align-items: center;
+		gap: 2rem;
+		margin-inline: auto;
+	}
+	.site-logo, .footer-logo { display: inline-flex; align-items: center; gap: 0.68rem; }
+	.brand-mark {
+		display: grid;
+		width: 2.35rem;
+		height: 2.35rem;
+		place-items: center;
+		border-radius: 0.52rem;
+		color: white;
+		background: var(--color-text);
+		font-size: 1.3rem;
+		font-weight: 900;
+		line-height: 1;
+		letter-spacing: -0.1em;
+		padding-right: 0.1em;
+	}
+	.brand-name { font-size: 1.25rem; font-weight: 850; letter-spacing: -0.065em; line-height: 1; }
+	.brand-period { color: var(--color-brand); }
+	.nav-links { display: flex; align-items: center; gap: 2rem; margin-left: auto; }
+	.nav-links a, .language-switch, .nav-admin { color: var(--color-muted); font-size: 0.9rem; font-weight: 650; }
+	.nav-links a:hover, .language-switch:hover { color: var(--color-text); }
+	.nav-actions { display: flex; align-items: center; gap: 1.15rem; }
+	.language-switch { min-width: 1.7rem; text-align: center; }
+	.nav-cta { min-height: 2.7rem; padding: 0.65rem 0.9rem; font-size: 0.86rem; }
+	.nav-cta span { font-size: 1.1em; }
+	.nav-admin { font-size: 0.82rem; }
+	.site-footer { margin-top: 7rem; color: #e9e8e1; background: #1b1c18; }
+	.footer-content {
+		display: grid;
+		width: min(100% - 3rem, 1160px);
+		grid-template-columns: 1fr auto;
+		gap: 3.5rem 2rem;
+		margin-inline: auto;
+		padding: 4rem 0 1.4rem;
+	}
+	.footer-logo { color: #fff; }
+	.footer-brand p { max-width: 24rem; margin: 1rem 0 0; color: #a8aaa0; font-size: 0.95rem; }
+	.footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+	.footer-column h2 { margin: 0 0 0.45rem; color: #9b9d93; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+	.footer-column a { color: #e9e8e1; font-size: 0.92rem; }
+	.footer-column a:hover { color: #ff9872; }
+	.footer-bottom {
+		display: flex;
+		grid-column: 1 / -1;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-top: 1.2rem;
+		border-top: 1px solid #3a3c35;
+		color: #9b9d93;
+		font-size: 0.78rem;
+	}
+	.footer-bottom p { margin: 0; }
+	.footer-bottom a { color: inherit; }
+	.footer-bottom a:hover { color: #fff; }
+	@media (max-width: 680px) {
+		.nav { width: min(100% - 2rem, 1220px); min-height: 4.4rem; gap: 1rem; }
+		.nav-links { display: none; }
+		.nav-actions { gap: 0.75rem; margin-left: auto; }
+		.nav-cta { padding-inline: 0.72rem; font-size: 0.78rem; }
+		.nav-admin { display: none; }
+		.container, .footer-content { width: min(100% - 2rem, 1160px); }
+		.footer-content { grid-template-columns: 1fr auto; gap: 2rem 1rem; padding-top: 3rem; }
+		.footer-bottom { align-items: flex-start; flex-direction: column; }
+	}
+</style>

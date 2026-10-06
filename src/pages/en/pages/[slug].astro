@@ -1,0 +1,65 @@
+---
+import { decodeSlug, getEmDashEntry, getSeoMeta } from "emdash";
+import MarketingBlocks from "../../../components/MarketingBlocks.astro";
+import Base from "../../../layouts/Base.astro";
+
+const slug = Astro.params.slug ? decodeSlug(Astro.params.slug) : null;
+if (!slug) return Astro.rewrite("/404");
+
+const { entry: page, error, cacheHint } = await getEmDashEntry("pages", slug, { locale: "en" });
+if (error) {
+	console.error("Failed to load page:", error);
+	return new Response("Unable to load this page", { status: 500 });
+}
+if (!page) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const description = "Odoo services, marketing analysis, graphic and social content, and Unity and web game development by Burumu.";
+const pagePath = `/en/pages/${encodeURIComponent(slug)}`;
+const seo = getSeoMeta(page, {
+	siteUrl: Astro.url.origin,
+	path: pagePath,
+	defaultDescription: description,
+});
+const localePath = slug === "home" ? "/" : `/pages/${encodeURIComponent(slug)}`;
+const canonical = slug === "home" ? `${Astro.url.origin}/en/` : seo?.canonical;
+---
+
+<Base
+	title={seo?.title ?? page.data.title}
+	description={seo?.description ?? description}
+	image={seo?.ogImage}
+	canonical={canonical}
+	robots={seo?.robots}
+	locale="en"
+	localePath={localePath}
+	content={{ collection: "pages", id: page.data.id, slug: page.id }}
+>
+	{page.data.content?.length ? (
+		<div {...page.edit.content}>
+			<MarketingBlocks value={page.data.content} />
+		</div>
+	) : (
+		<section class="empty-page">
+			<h1>{page.data.title}</h1>
+		</section>
+	)}
+</Base>
+
+<style>
+	.empty-page {
+		width: min(100% - 3rem, 960px);
+		min-height: 50vh;
+		margin: 0 auto;
+		padding: 6rem 0 2rem;
+	}
+	.empty-page h1 {
+		max-width: 18ch;
+		font-size: clamp(2.7rem, 7vw, 5.2rem);
+		font-weight: 850;
+		letter-spacing: -0.075em;
+	}
+	@media (max-width: 600px) {
+		.empty-page { width: min(100% - 2rem, 960px); padding-top: 4.3rem; }
+	}
+</style>

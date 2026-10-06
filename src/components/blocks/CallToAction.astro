@@ -1,0 +1,71 @@
+---
+import { sanitizeHref } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+
+type CtaBlock = Extract<PageContentBlock, { _type: "marketing_cta" }>;
+type Props = BlockComponentProps<CtaBlock>;
+
+const { value } = Astro.props;
+const href = value.button_url ? sanitizeHref(value.button_url) : "/contact";
+---
+
+<section id={value.anchor_id || undefined} class="closing-cta">
+	<div class="cta-inner">
+		<div class="cta-mark" aria-hidden="true">B<span>.</span></div>
+		<div class="cta-copy">
+			{value.eyebrow && <p class="cta-eyebrow">{value.eyebrow}</p>}
+			<h2>{value.headline}</h2>
+			{value.subheadline && <p>{value.subheadline}</p>}
+		</div>
+		<a href={href} class="btn btn-light">
+			{value.button_label}<span aria-hidden="true">↗</span>
+		</a>
+	</div>
+</section>
+
+<style>
+	.closing-cta { width: min(100% - 3rem, 1160px); margin: 1rem auto 0; }
+	.cta-inner {
+		position: relative;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 2rem;
+		padding: 2.8rem;
+		border-radius: 0.8rem;
+		color: #fff9f1;
+		background: var(--color-text);
+	}
+	.cta-inner::after {
+		position: absolute;
+		right: -3rem;
+		bottom: -9rem;
+		width: 18rem;
+		height: 18rem;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 50%;
+		box-shadow: 0 0 0 2rem rgba(255,255,255,.025), 0 0 0 4rem rgba(255,255,255,.025);
+		content: "";
+		pointer-events: none;
+	}
+	.cta-mark { color: #fff8ef; font-size: 4.3rem; font-weight: 900; letter-spacing: -0.15em; line-height: 1; }
+	.cta-mark span { color: #f07a50; }
+	.cta-copy { position: relative; z-index: 1; max-width: 35rem; }
+	.cta-eyebrow { margin-bottom: 0.45rem !important; color: #ffa17f !important; font-size: 0.68rem !important; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
+	.cta-copy h2 { max-width: 18ch; margin-bottom: 0.55rem; font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.055em; }
+	.cta-copy p { max-width: 38rem; margin-bottom: 0; color: #bdbeb5; font-size: 0.94rem; line-height: 1.75; }
+	.btn-light { position: relative; z-index: 1; color: #1c1d19; background: #fff9f1; white-space: nowrap; }
+	.btn-light:hover { background: #ffb196; }
+	@media (max-width: 850px) {
+		.cta-inner { grid-template-columns: auto 1fr; gap: 1.4rem; padding: 2rem; }
+		.cta-inner .btn { grid-column: 2; justify-self: start; }
+	}
+	@media (max-width: 600px) {
+		.closing-cta { width: min(100% - 2rem, 1160px); }
+		.cta-inner { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem; }
+		.cta-mark { font-size: 3rem; }
+		.cta-inner .btn { grid-column: 1; justify-self: stretch; }
+	}
+</style>

@@ -1,0 +1,26 @@
+---
+import Base from "../layouts/Base.astro";
+
+const isEnglish = Astro.currentLocale === "en";
+const prefix = isEnglish ? "/en" : "";
+---
+
+<Base title={isEnglish ? "Page not found" : "ไม่พบหน้าที่ต้องการ"} locale={isEnglish ? "en" : "th"} localePath="/" alternates={false} robots="noindex, follow">
+	<section class="not-found">
+		<p class="not-found-code">404</p>
+		<h1>{isEnglish ? "This page is not here." : "ไม่พบหน้าที่คุณกำลังมองหา"}</h1>
+		<p>{isEnglish ? "The page may have moved or the address may be incorrect." : "หน้าเว็บอาจถูกย้าย หรือที่อยู่อาจไม่ถูกต้อง"}</p>
+		<div class="not-found-actions">
+			<a href={prefix + "/"} class="btn btn-primary">{isEnglish ? "Go to home" : "กลับหน้าแรก"}</a>
+			<a href={prefix + "/contact"} class="btn btn-secondary">{isEnglish ? "Contact Burumu" : "ติดต่อ Burumu"}</a>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.not-found { display: grid; min-height: 60vh; align-content: center; justify-items: center; padding: 4rem 1rem; text-align: center; }
+	.not-found-code { margin-bottom: 0.5rem; color: var(--color-brand); font-size: clamp(5rem, 20vw, 11rem); font-weight: 900; letter-spacing: -0.1em; line-height: 0.9; opacity: 0.35; }
+	.not-found h1 { max-width: 18ch; margin-bottom: 0.7rem; font-size: clamp(2rem, 6vw, 3.5rem); }
+	.not-found > p:not(.not-found-code) { margin-bottom: 1.7rem; color: var(--color-muted); }
+	.not-found-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+</style>

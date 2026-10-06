@@ -1,0 +1,167 @@
+---
+import { getEmDashEntry, getSeoMeta } from "emdash";
+import Base from "../layouts/Base.astro";
+import MarketingBlocks from "./MarketingBlocks.astro";
+import type { PageContentBlock } from "../../emdash-env";
+
+interface Props {
+	locale: "th" | "en";
+}
+
+const { locale } = Astro.props;
+const { entry: page, cacheHint } = await getEmDashEntry("pages", "home", { locale });
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const copy: { title: string; description: string; content: PageContentBlock[] } = locale === "th"
+	? {
+			title: "บริการดิจิทัลสำหรับธุรกิจและไอเดียใหม่",
+			description: "บริการ Odoo, วิเคราะห์การตลาด, ออกแบบกราฟิกและคอนเทนต์ ไปจนถึงพัฒนาเกม Unity และเว็บ โดย Burumu",
+			content: [
+				{
+					_type: "marketing_hero",
+					_version: 1,
+					_key: "hero-th",
+					anchor_id: "top",
+					eyebrow: "บริการดิจิทัลโดย Burumu",
+					headline: "เชื่อมระบบธุรกิจ กับไอเดียดิจิทัล",
+					subheadline: "Burumu ให้บริการติดตั้งและย้ายระบบ Odoo พร้อมอบรมทีม วิเคราะห์การตลาด ออกแบบกราฟิกและคอนเทนต์โซเชียล รวมถึงพัฒนาเกมบน Unity และเว็บ",
+					primary_cta_label: "คุยเรื่องโปรเจกต์",
+					primary_cta_url: "/contact",
+					secondary_cta_label: "ดูบริการทั้งหมด",
+					secondary_cta_url: "/#services",
+				},
+				{
+					_type: "marketing_features",
+					_version: 1,
+					_key: "services-th",
+					anchor_id: "services",
+					eyebrow: "สิ่งที่ Burumu ทำ",
+					headline: "บริการของ Burumu",
+					subheadline: "เลือกเริ่มจากบริการที่ต้องการ หรือเล่าโจทย์ให้เราช่วยดูขอบเขตงานที่เหมาะสม",
+					features: [
+						{
+							number: "01",
+							label: "ERP SYSTEMS",
+							title: "ติดตั้งและย้ายระบบ Odoo",
+							description: "ติดตั้งระบบ Odoo ย้ายข้อมูลจากระบบเดิม และอบรมผู้ใช้งาน",
+						},
+						{
+							number: "02",
+							label: "MARKETING",
+							title: "วิเคราะห์การตลาด",
+							description: "วิเคราะห์โจทย์และภาพรวมตลาด เพื่อให้เห็นข้อมูลที่ใช้ประกอบการตัดสินใจ",
+						},
+						{
+							number: "03",
+							label: "CONTENT",
+							title: "กราฟิก SEO และคอนเทนต์โซเชียล",
+							description: "ออกแบบกราฟิก ทำ SEO และจัดทำเนื้อหาสำหรับช่องทางโซเชียล",
+						},
+						{
+							number: "04",
+							label: "GAME DEV",
+							title: "พัฒนาเกม Unity และเว็บ",
+							description: "พัฒนาเกมสำหรับ Unity และเว็บ ตามรูปแบบและแนวคิดของโปรเจกต์",
+						},
+					],
+				},
+				{
+					_type: "marketing_cta",
+					_version: 1,
+					_key: "enquiry-th",
+					eyebrow: "เริ่มต้นพูดคุย",
+					headline: "กำลังมองหาทีมช่วยเรื่องอะไรอยู่?",
+					subheadline: "เล่าโจทย์เกี่ยวกับระบบ การตลาด คอนเทนต์ หรือเกม เพื่อเริ่มต้นวางขอบเขตงาน",
+					button_label: "ติดต่อ Burumu",
+					button_url: "/contact",
+				},
+			],
+		}
+	: {
+			title: "Digital services for business and new ideas",
+			description: "Odoo services, marketing analysis, graphic and social content, and Unity and web game development by Burumu.",
+			content: [
+				{
+					_type: "marketing_hero",
+					_version: 1,
+					_key: "hero-en",
+					anchor_id: "top",
+					eyebrow: "Digital services by Burumu",
+					headline: "Business systems meet digital ideas",
+					subheadline: "Burumu provides Odoo installation, migration and training; marketing analysis; graphic design, SEO and social content; and game development for Unity and the web.",
+					primary_cta_label: "Discuss a project",
+					primary_cta_url: "/en/contact",
+					secondary_cta_label: "Explore services",
+					secondary_cta_url: "/en/#services",
+				},
+				{
+					_type: "marketing_features",
+					_version: 1,
+					_key: "services-en",
+					anchor_id: "services",
+					eyebrow: "What Burumu does",
+					headline: "Burumu services",
+					subheadline: "Start with a specific service or share your brief so we can discuss the scope that fits.",
+					features: [
+						{
+							number: "01",
+							label: "ERP SYSTEMS",
+							title: "Odoo setup and migration",
+							description: "Install Odoo, migrate data from an existing system, and train users.",
+						},
+						{
+							number: "02",
+							label: "MARKETING",
+							title: "Marketing analysis",
+							description: "Review your brief and market context to clarify information for decision-making.",
+						},
+						{
+							number: "03",
+							label: "CONTENT",
+							title: "Graphics, SEO and social content",
+							description: "Graphic design, SEO, and content for social media channels.",
+						},
+						{
+							number: "04",
+							label: "GAME DEV",
+							title: "Unity and web games",
+							description: "Game development for Unity and the web, shaped around your project's format and idea.",
+						},
+					],
+				},
+				{
+					_type: "marketing_cta",
+					_version: 1,
+					_key: "enquiry-en",
+					eyebrow: "Start a conversation",
+					headline: "What kind of project are you planning?",
+					subheadline: "Tell us whether you need help with systems, marketing, content, or a game, and we can begin discussing scope.",
+					button_label: "Contact Burumu",
+					button_url: "/en/contact",
+				},
+			],
+		};
+
+const pageTitle = page?.data.title ?? copy.title;
+const seo = page
+	? getSeoMeta(page, {
+			siteUrl: Astro.url.origin,
+			path: locale === "en" ? "/en/" : "/",
+			defaultDescription: copy.description,
+		})
+	: null;
+const pageContent = page?.data.content?.length ? page.data.content : copy.content;
+---
+
+<Base
+	title={seo?.title && seo.title !== pageTitle ? seo.title : pageTitle}
+	description={seo?.description ?? copy.description}
+	image={seo?.ogImage}
+	canonical={seo?.canonical}
+	robots={seo?.robots}
+	locale={locale}
+	localePath="/"
+	content={page ? { collection: "pages", id: page.data.id, slug: page.id } : undefined}
+>
+	<MarketingBlocks value={pageContent} />
+</Base>

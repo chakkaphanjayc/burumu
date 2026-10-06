@@ -1,0 +1,21 @@
+---
+import { Blocks, defineBlockComponents } from "emdash/ui";
+import type { PageContentBlock } from "../../emdash-env";
+import CallToAction from "./blocks/CallToAction.astro";
+import Features from "./blocks/Features.astro";
+import Hero from "./blocks/Hero.astro";
+
+interface Props {
+	value?: PageContentBlock[] | null;
+}
+
+const { value } = Astro.props;
+
+const marketingComponents = defineBlockComponents<PageContentBlock>({
+	marketing_hero: Hero,
+	marketing_features: Features,
+	marketing_cta: CallToAction,
+});
+---
+
+<Blocks {value} components={marketingComponents} />
